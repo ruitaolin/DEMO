@@ -1,0 +1,24 @@
+model {
+  ## Likelihood
+  for (i in 1:Npat) {
+    # Interval censoring indicator
+    is.censored[i] ~ dinterval(YS[i], YS_cen[i])
+
+    # Weibull data model
+    YS[i] ~ dweibull(alpha, lambda[i])
+
+    # Log-scale hazard
+    lambda[i] <- exp(lambdaT[d[i]] + delta1 * YT[i] + delta2 * YE[i] + delta3 * YB[i])
+  }
+
+  # Baseline hazard parameters, one per dose group
+  for (j in 1:J) {
+    lambdaT[j] ~ dnorm(0, 0.01)
+  }
+
+  ## Priors
+  alpha  ~ dgamma(0.1, 0.1)      # shape parameter
+  delta1 ~ dnorm(0.000, 0.01)
+  delta2 ~ dnorm(0.000, 0.01)
+  delta3 ~ dnorm(0.000, 0.01)
+}

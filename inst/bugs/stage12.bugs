@@ -1,0 +1,30 @@
+model {
+  # Likelihood
+  for (j in 1:Npat) {
+    mu[j] <- alpha0 + alpha1 * (d[j]^alpha3) / (alpha2^alpha3 + d[j]^alpha3)
+    YB[j] ~ dnorm(mu[j], tau)
+
+    logit(Pr.Tox[j]) <- beta0 + exp(beta1) * d[j] + exp(beta2) * YB[j]
+    NTox[j] ~ dbin(Pr.Tox[j], 1)
+
+    logit(Pr.Eff[j]) <- gamma0 + gamma1 * d[j] + gamma2 * (d[j] * d[j]) + gamma3 * YB[j]
+    NEff[j] ~ dbin(Pr.Eff[j], 1)
+  }
+
+  # Priors
+  tau ~ dgamma(0.1, 0.1)
+
+  alpha0 ~ dnorm(0, 0.1)
+  alpha1 ~ dgamma(1/4*4.0, 1/4)
+  alpha2 ~ dgamma(1/4*0.4, 1/4)  # If you want truncation, see note below
+  alpha3 ~ dgamma(1/4*3.0, 1/4)  # Ditto
+
+  beta0 ~ dnorm(-2.000, 1/10)
+  beta1 ~ dnorm(-0.693, 1/5)
+  beta2 ~ dnorm(-2.302, 1/5)
+
+  gamma0 ~ dnorm(0.000, 1/5)
+  gamma1 ~ dnorm(0.000, 1/5)
+  gamma2 ~ dnorm(0.000, 1/5)
+  gamma3 ~ dnorm(0.000, 1/5)
+}

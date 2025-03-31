@@ -1,0 +1,11 @@
+model {
+  # Likelihood
+  for (j in 1:Npat) {
+    logit(Pr.Tox[j]) <- beta0 + exp(beta1) * d[j] 
+    NTox[j] ~ dbin(Pr.Tox[j], 1)
+  }
+
+  # Priors
+  beta0 ~ dnorm(-2.000, 1/10)
+  beta1 ~ dnorm(-0.693, 1/5)
+}
